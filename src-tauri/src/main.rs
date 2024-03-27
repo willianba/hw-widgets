@@ -67,7 +67,13 @@ async fn main() {
                 size: _,
                 ..
             } => {
-                toggle_visibility(app);
+                let toggle_handle = app.tray_handle().get_item(MenuItemId::Toggle.as_str());
+                let window = app.get_window(WindowId::Main.as_str()).unwrap();
+
+                window.show().unwrap();
+                toggle_handle
+                    .set_title(MenuItemTitle::Hide.as_str())
+                    .unwrap();
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
                 "settings" => {
