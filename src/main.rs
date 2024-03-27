@@ -1,4 +1,6 @@
 mod app;
+mod components;
+mod router;
 mod sensors;
 
 use app::App;
