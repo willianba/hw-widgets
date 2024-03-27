@@ -4,13 +4,19 @@ use serde::Serialize;
 
 #[derive(Default, Debug, Serialize)]
 pub struct SensorData {
-    pub index: Option<i32>,
+    pub index: Option<u8>,
     pub label: Option<String>,
     pub value: Option<String>,
     pub value_raw: Option<String>,
 }
 
-pub fn get_sensor_data() -> Result<String, String> {
+pub fn get_sensor_data() -> Vec<SensorData> {
+    let data = read_values_from_registry().expect("Failed to read values from registry");
+    let parsed = parse_sensor_data(data);
+    parsed
+}
+
+fn read_values_from_registry() -> Result<String, String> {
     let output = Command::new("reg")
         .args(&["query", r"HKEY_CURRENT_USER\SOFTWARE\HWiNFO64\VSB"])
         .output();
@@ -28,7 +34,7 @@ pub fn get_sensor_data() -> Result<String, String> {
     }
 }
 
-pub fn parse_sensor_data(data: String) -> Vec<SensorData> {
+fn parse_sensor_data(data: String) -> Vec<SensorData> {
     let mut sensors: Vec<SensorData> = Vec::new();
     let mut current_sensor: SensorData = SensorData::default();
 
