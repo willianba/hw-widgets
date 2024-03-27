@@ -20,12 +20,17 @@
       "shell": {
         "all": false,
         "open": true
+      },
+      "window": {
+        "all": true
       }
     },
     "windows": [
       {
-        "width": 1280,
-        "height": 800
+        "title": "Willian's Hardware Panel",
+        "center": true,
+        "width": 1024,
+        "height": 640
       }
     ],
     "security": {
