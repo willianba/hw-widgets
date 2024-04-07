@@ -3,6 +3,7 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
+#![warn(clippy::all, rust_2018_idioms)]
 
 mod enums;
 mod sensors;
