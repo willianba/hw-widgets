@@ -9,40 +9,46 @@ mod sensors;
 mod state;
 mod tray;
 
-use std::time::Duration;
+use std::{
+    sync::{Arc, Mutex},
+    time::Duration,
+};
 
 use enums::{MenuItemId, MenuItemTitle, WindowId, WindowTitle};
 use sensors::SensorData;
-use state::SensorState;
-use tauri::{Manager, SystemTray, SystemTrayEvent, WindowBuilder, WindowEvent, WindowUrl};
+use state::AppState;
+use tauri::{Manager, State, SystemTray, SystemTrayEvent, WindowBuilder, WindowEvent, WindowUrl};
 use tokio::time;
 use tray::{
-    events::{quit, toggle_visibility},
+    events::{quit, toggle_always_on_top, toggle_visibility},
     menu::create_tray_menu,
 };
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-fn stats() -> Vec<SensorData> {
-    sensors::get_sensor_data()
+fn stats(state: State<'_, Arc<Mutex<AppState>>>) -> Vec<SensorData> {
+    state.lock().unwrap().sensor_data.clone()
 }
 
 #[tokio::main]
 async fn main() {
-    let sensor_state = SensorState::default();
-    let sensor_data_for_loop = sensor_state.clone();
-    tokio::spawn(async move {
-        let mut interval = time::interval(Duration::from_secs(2));
-        loop {
-            interval.tick().await;
-            sensor_data_for_loop.update().await;
+    let state = Arc::new(Mutex::new(AppState::default()));
+
+    tokio::spawn({
+        let state = state.clone();
+        async move {
+            let mut interval = time::interval(Duration::from_secs(2));
+            loop {
+                interval.tick().await;
+                state.lock().unwrap().refresh_sensors();
+            }
         }
     });
 
     let tray = SystemTray::new().with_menu(create_tray_menu());
 
     tauri::Builder::default()
-        .manage(sensor_state)
+        .manage(state.clone())
         .on_window_event(|event| match event.event() {
             WindowEvent::CloseRequested { api, .. } => match event.window().label() {
                 "main" => {

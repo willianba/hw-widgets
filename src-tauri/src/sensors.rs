@@ -2,7 +2,7 @@ use std::process::Command;
 
 use serde::Serialize;
 
-#[derive(Default, Debug, Serialize)]
+#[derive(Default, Debug, Serialize, Clone)]
 pub struct SensorData {
     pub index: Option<u8>,
     pub label: Option<String>,
@@ -27,10 +27,10 @@ fn read_values_from_registry() -> Result<String, String> {
                 let result = String::from_utf8_lossy(&output.stdout).to_string();
                 Ok(result)
             } else {
-                Err("Failed to execute command".into())
+                Err("Ensure hwinfo is running".into())
             }
         }
-        Err(_) => Err("Failed to start command".into()),
+        Err(_) => Err("Failed accesing Windows registry".into()),
     }
 }
 
