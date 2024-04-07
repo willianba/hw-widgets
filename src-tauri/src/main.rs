@@ -61,7 +61,7 @@ async fn main() {
             _ => {}
         })
         .system_tray(tray)
-        .on_system_tray_event(|app, event| match event {
+        .on_system_tray_event(move |app, event| match event {
             SystemTrayEvent::LeftClick {
                 position: _,
                 size: _,
@@ -76,6 +76,7 @@ async fn main() {
                     .unwrap();
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+                "always_on_top" => toggle_always_on_top(app, state.clone()),
                 "settings" => {
                     WindowBuilder::new(
                         app,

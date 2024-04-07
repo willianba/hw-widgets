@@ -25,15 +25,17 @@ impl WindowTitle {
 }
 
 pub enum MenuItemId {
+    Settings,
+    AlwaysOnTop,
     Toggle,
     Quit,
-    Settings,
 }
 
 impl MenuItemId {
     pub fn as_str(&self) -> &str {
         match self {
             MenuItemId::Settings => "settings",
+            MenuItemId::AlwaysOnTop => "always_on_top",
             MenuItemId::Toggle => "toggle",
             MenuItemId::Quit => "quit",
         }
@@ -45,12 +47,14 @@ pub enum MenuItemTitle {
     Hide,
     Quit,
     Settings,
+    AlwaysOnTop,
 }
 
 impl MenuItemTitle {
     pub fn as_str(&self) -> &str {
         match self {
             MenuItemTitle::Settings => "Settings",
+            MenuItemTitle::AlwaysOnTop => "Always on top",
             MenuItemTitle::Show => "Show",
             MenuItemTitle::Hide => "Hide",
             MenuItemTitle::Quit => "Quit",

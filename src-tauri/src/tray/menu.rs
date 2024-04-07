@@ -7,6 +7,10 @@ pub fn create_tray_menu() -> SystemTrayMenu {
             MenuItemId::Settings.as_str(),
             MenuItemTitle::Settings.as_str(),
         ))
+        .add_item(CustomMenuItem::new(
+            MenuItemId::AlwaysOnTop.as_str(),
+            MenuItemTitle::AlwaysOnTop.as_str(),
+        ))
         .add_native_item(tauri::SystemTrayMenuItem::Separator)
         .add_item(CustomMenuItem::new(
             MenuItemId::Toggle.as_str(),
