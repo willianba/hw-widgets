@@ -46,8 +46,6 @@ async fn main() {
         }
     });
 
-    let tray = SystemTray::new().with_menu(create_tray_menu());
-
     tauri::Builder::default()
         .manage(state.clone())
         .on_window_event(|event| match event.event() {
@@ -67,7 +65,7 @@ async fn main() {
             },
             _ => {}
         })
-        .system_tray(tray)
+        .system_tray(SystemTray::new().with_menu(create_tray_menu()))
         .on_system_tray_event(move |app, event| match event {
             SystemTrayEvent::LeftClick {
                 position: _,
