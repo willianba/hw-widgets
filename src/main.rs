@@ -8,5 +8,6 @@ mod sensors;
 use app::App;
 
 fn main() {
-    yew::Renderer::<App>::new().render();
+    yew::Renderer::<App>::new().render().expect("Failed to render the app");
 }
+
