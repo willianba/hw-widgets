@@ -4,7 +4,7 @@ use tauri::{AppHandle, Manager};
 
 use crate::{
     enums::{MenuItemId, MenuItemTitle, WindowId},
-    state::AppState,
+    AppState,
 };
 
 pub fn toggle_always_on_top(app: &AppHandle, state: Arc<Mutex<AppState>>) {
@@ -23,14 +23,10 @@ pub fn toggle_visibility(app: &AppHandle) {
 
     if window.is_visible().unwrap() {
         window.hide().unwrap();
-        toggle_handle
-            .set_title(MenuItemTitle::Show.as_str())
-            .unwrap();
+        toggle_handle.set_title(MenuItemTitle::Show.as_str()).unwrap();
     } else {
         window.show().unwrap();
-        toggle_handle
-            .set_title(MenuItemTitle::Hide.as_str())
-            .unwrap();
+        toggle_handle.set_title(MenuItemTitle::Hide.as_str()).unwrap();
     }
 }
 

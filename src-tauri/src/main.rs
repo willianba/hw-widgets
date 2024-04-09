@@ -1,13 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
-#![cfg_attr(
-    all(not(debug_assertions), target_os = "windows"),
-    windows_subsystem = "windows"
-)]
+#![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
 #![warn(clippy::all, rust_2018_idioms)]
 
 mod enums;
 mod sensors;
-mod state;
 mod tray;
 
 use std::{
@@ -16,8 +12,7 @@ use std::{
 };
 
 use enums::{MenuItemId, MenuItemTitle, WindowId, WindowTitle};
-use sensors::SensorData;
-use state::AppState;
+use sensors::{SensorData, Sensors};
 use tauri::{Manager, State, SystemTray, SystemTrayEvent, WindowBuilder, WindowEvent, WindowUrl};
 use tokio::time;
 use tray::{
@@ -31,8 +26,15 @@ fn stats(state: State<'_, Arc<Mutex<AppState>>>) -> Vec<SensorData> {
     state.lock().unwrap().sensor_data.clone()
 }
 
+#[derive(Clone, Default)]
+pub struct AppState {
+    pub always_on_top: bool,
+    pub sensor_data: Vec<SensorData>,
+}
+
 #[tokio::main]
 async fn main() {
+    let mut sensors_manager = Sensors::new();
     let state = Arc::new(Mutex::new(AppState::default()));
 
     tokio::spawn({
@@ -41,7 +43,7 @@ async fn main() {
             let mut interval = time::interval(Duration::from_secs(2));
             loop {
                 interval.tick().await;
-                state.lock().unwrap().refresh_sensors();
+                state.lock().unwrap().sensor_data = sensors_manager.get_data();
             }
         }
     });
@@ -67,18 +69,12 @@ async fn main() {
         })
         .system_tray(SystemTray::new().with_menu(create_tray_menu()))
         .on_system_tray_event(move |app, event| match event {
-            SystemTrayEvent::LeftClick {
-                position: _,
-                size: _,
-                ..
-            } => {
+            SystemTrayEvent::LeftClick { position: _, size: _, .. } => {
                 let toggle_handle = app.tray_handle().get_item(MenuItemId::Toggle.as_str());
                 let window = app.get_window(WindowId::Main.as_str()).unwrap();
 
                 window.show().unwrap();
-                toggle_handle
-                    .set_title(MenuItemTitle::Hide.as_str())
-                    .unwrap();
+                toggle_handle.set_title(MenuItemTitle::Hide.as_str()).unwrap();
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
                 "always_on_top" => toggle_always_on_top(app, state.clone()),
