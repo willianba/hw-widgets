@@ -1,8 +1,8 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::components::settings::Settings;
-use crate::components::widgets::Widgets;
+use crate::windows::settings::Settings;
+use crate::windows::widgets::Widgets;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
