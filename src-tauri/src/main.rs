@@ -11,12 +11,12 @@ use std::{
     time::Duration,
 };
 
-use enums::{MenuItemId, MenuItemTitle, WindowId, WindowTitle};
+use enums::{MenuItemId, MenuItemTitle, WindowId};
 use sensors::{SensorData, Sensors};
-use tauri::{Manager, State, SystemTray, SystemTrayEvent, WindowBuilder, WindowEvent, WindowUrl};
+use tauri::{Manager, State, SystemTray, SystemTrayEvent, WindowEvent};
 use tokio::time;
 use tray::{
-    events::{quit, toggle_always_on_top, toggle_visibility},
+    events::{open_settings, quit, toggle_always_on_top, toggle_visibility},
     menu::create_tray_menu,
 };
 
@@ -78,17 +78,7 @@ async fn main() {
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
                 "always_on_top" => toggle_always_on_top(app, state.clone()),
-                "settings" => {
-                    WindowBuilder::new(
-                        app,
-                        WindowId::Settings.as_str(),
-                        WindowUrl::App("settings".into()),
-                    )
-                    .title(WindowTitle::Settings.as_str())
-                    .center()
-                    .build()
-                    .expect("Failed to create settings window");
-                }
+                "settings" => open_settings(app, state.clone()),
                 "toggle" => {
                     toggle_visibility(app);
                 }
